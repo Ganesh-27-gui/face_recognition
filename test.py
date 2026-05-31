@@ -4,19 +4,17 @@ import os
 from utils import load_dataset
 from pca import *
 from ann import ANN
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import label_binarize
-
-# ── CONFIG ──────────────────────────────────────────────────────
-DATASET_PATH    = "dataset/faces"  # path to dataset folder
-IMPOSTER_PATH   = "imposters"   # Folder with imposter images
+from sklearn.model_selection import train_test_split 
+from sklearn.preprocessing import label_binarize 
+ 
+DATASET_PATH    = "dataset/faces"  
+IMPOSTER_PATH   = "imposters"   
 IMG_SIZE        = (50, 50)
-K               = 30            # Best k from part (a)
+K               = 30            
 HIDDEN_SIZE     = 128
 EPOCHS          = 1000
 LR              = 0.01
-CONFIDENCE_THRESHOLD = 0.70   # If max softmax < this → imposter
-# ────────────────────────────────────────────────────────────────
+CONFIDENCE_THRESHOLD = 0.70  
 
 face_db, labels, label_names = load_dataset(DATASET_PATH, IMG_SIZE)
 n_classes = len(label_names)
@@ -41,8 +39,8 @@ ann.train(Omega_train, Y_train_oh, epochs=EPOCHS)
 def recognize(img_path, ann, eigenfaces, mean_face, label_names, threshold=CONFIDENCE_THRESHOLD):
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     img = cv2.resize(img, IMG_SIZE)
-    omega = project_test_face(eigenfaces, img, mean_face)  # (k, 1)
-    proba = ann.predict_proba(omega)                        # (n_classes, 1)
+    omega = project_test_face(eigenfaces, img, mean_face)   
+    proba = ann.predict_proba(omega)                        
     max_conf = np.max(proba)
     pred_label = np.argmax(proba)
     
@@ -50,8 +48,7 @@ def recognize(img_path, ann, eigenfaces, mean_face, label_names, threshold=CONFI
         return "IMPOSTER (Not Enrolled)", max_conf
     else:
         return label_names[pred_label], float(max_conf)
-
-# Test on known test set
+ 
 print("\n── Known faces test ──")
 for i in range(min(5, X_test.shape[1])):
     face_img = X_test[:, i].reshape(IMG_SIZE)
@@ -62,7 +59,6 @@ for i in range(min(5, X_test.shape[1])):
     actual = label_names[y_test[i]]
     print(f"  Actual: {actual:15s} | Predicted: {pred:15s} | Confidence: {conf:.2f}")
 
-# Test on imposters
 if os.path.exists(IMPOSTER_PATH):
     print("\n── Imposter test ──")
     for img_file in os.listdir(IMPOSTER_PATH):

@@ -22,11 +22,11 @@ def load_dataset(dataset_path, img_size=(50, 50)):
             img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
             if img is None:
                 continue
-            img = cv2.resize(img, img_size)        # resize to fixed size
-            col_vec = img.flatten().astype(np.float64)  # flatten → column vector (mn,)
+            img = cv2.resize(img, img_size)        
+            col_vec = img.flatten().astype(np.float64)  
             face_db.append(col_vec)
             labels.append(label_idx)
 
-    face_db = np.array(face_db).T   # shape: (mn, p)
+    face_db = np.array(face_db).T   
     labels = np.array(labels)
     return face_db, labels, label_names
